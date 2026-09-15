@@ -6,4 +6,6 @@ public interface EmailService {
     void sendBookingConfirmation(Booking booking);
 
     void sendCheckInOtp(Booking booking, String otp);
+
+    void sendCampaignEmail(String recipientEmail, String recipientName, String subject, String content);
 }
