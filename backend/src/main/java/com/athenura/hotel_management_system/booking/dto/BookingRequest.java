@@ -2,6 +2,7 @@ package com.athenura.hotel_management_system.booking.dto;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
