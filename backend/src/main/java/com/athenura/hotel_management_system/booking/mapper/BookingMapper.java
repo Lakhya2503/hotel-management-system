@@ -36,8 +36,8 @@ public class BookingMapper {
                 .receptionistName(
                         booking.getReceptionist() != null
                                 ? booking.getReceptionist().getFirstName()
-                                + " "
-                                + booking.getReceptionist().getLastName()
+                                  + " "
+                                  + booking.getReceptionist().getLastName()
                                 : null
                 )
 
@@ -48,16 +48,5 @@ public class BookingMapper {
                 .bookingStatus(booking.getBookingStatus())
 
                 .build();
-    }
-
-    public BookingResponse toResponseWithPayment(Booking booking, PaymentDTO.ReceiptResponse receipt) {
-        BookingResponse response = toResponse(booking);
-        response.setReceiptNumber(receipt.getReceiptNumber());
-        response.setAmountPaid(receipt.getAmountPaid());
-        response.setRemainingBalance(receipt.getRemainingBalance());
-        response.setPaymentType(receipt.getPaymentType());
-        response.setPaymentMethod(receipt.getPaymentMethod());
-        response.setReceiptType(receipt.getReceiptType());
-        return response;
     }
 }
