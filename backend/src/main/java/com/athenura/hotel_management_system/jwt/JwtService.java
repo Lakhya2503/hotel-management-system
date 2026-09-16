@@ -1,6 +1,7 @@
 package com.athenura.hotel_management_system.jwt;
 
 import com.athenura.hotel_management_system.common.entity.Users;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
