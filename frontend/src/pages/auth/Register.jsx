@@ -1,13 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FiUser, FiMail, FiLock, FiHome, FiKey, FiUserPlus } from "react-icons/fi";
-import { Athenura_Circle_Logo, Bedroom_image_login_Register } from "../../assets";
-
+import {
+  FiUser,
+  FiMail,
+  FiLock,
+  FiHome,
+  FiKey,
+  FiUserPlus,
+} from "react-icons/fi";
+import {
+  Athenura_Circle_Logo,
+  Bedroom_image_login_Register,
+} from "../../assets";
+import useAuthStore from "../../app/useAuthStore";
 
 const Register = () => {
+  const register = useAuthStore((state) => state.register);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    await register(fullName, email, password, secretKey);
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-3 md:p-4 relative overflow-hidden">
-    
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -20,17 +45,13 @@ const Register = () => {
         }}
       />
 
-     
       <div className="absolute inset-0 z-0 bg-black/60" />
 
-     
       <div className="relative z-10 w-full max-w-6xl flex flex-col md:flex-row rounded-2xl md:rounded-3xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl">
-        
         <div className="hidden md:flex w-full md:w-1/2 p-8 lg:p-12 flex-col justify-between bg-black/30 backdrop-blur-sm border-r border-white/10">
           <div>
             <div className="flex items-center gap-2 mb-10 lg:mb-12">
               <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center shadow-lg">
-              
                 <img src={Athenura_Circle_Logo} alt="" />
               </div>
               <span className="text-white font-bold text-xl lg:text-2xl tracking-tight">
@@ -42,11 +63,13 @@ const Register = () => {
             </div>
 
             <h1 className="text-3xl lg:text-5xl font-bold text-white mb-3 lg:mb-4 leading-tight">
-              Join the<br />
+              Join the
+              <br />
               <span className="text-amber-400">Luxury Experience</span>
             </h1>
             <p className="text-amber-100/80 text-base lg:text-lg mb-6 lg:mb-8 max-w-sm">
-              Create your account to manage bookings, access premium services, and experience world-class hospitality.
+              Create your account to manage bookings, access premium services,
+              and experience world-class hospitality.
             </p>
 
             <div className="space-y-3 lg:space-y-4">
@@ -110,11 +133,15 @@ const Register = () => {
                 Join Us Today
               </h2>
               <p className="text-amber-200/70 text-xs sm:text-sm">
-                Join Athenura and experience luxury, comfort, and exceptional service
+                Join Athenura and experience luxury, comfort, and exceptional
+                service
               </p>
             </div>
 
-            <form className="w-full max-w-sm mx-auto space-y-4 sm:space-y-5">
+            <form
+              className="w-full max-w-sm mx-auto space-y-4 sm:space-y-5"
+              onSubmit={handleRegister}
+            >
               <div className="space-y-1.5">
                 <label className="text-white/80 text-xs sm:text-sm font-medium block text-left">
                   Full Name
@@ -123,13 +150,14 @@ const Register = () => {
                   <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 w-4 h-4 sm:w-5 sm:h-5 group-focus-within:text-amber-300 transition-colors" />
                   <input
                     type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
                     placeholder="John Doe"
                     className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all"
                   />
                 </div>
               </div>
 
-        
               <div className="space-y-1.5">
                 <label className="text-white/80 text-xs sm:text-sm font-medium block text-left">
                   Email Address
@@ -138,13 +166,14 @@ const Register = () => {
                   <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 w-4 h-4 sm:w-5 sm:h-5 group-focus-within:text-amber-300 transition-colors" />
                   <input
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="guest@luxestay.com"
                     className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all"
                   />
                 </div>
               </div>
 
-            
               <div className="space-y-1.5">
                 <label className="text-white/80 text-xs sm:text-sm font-medium block text-left">
                   Password
@@ -153,13 +182,14 @@ const Register = () => {
                   <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 w-4 h-4 sm:w-5 sm:h-5 group-focus-within:text-amber-300 transition-colors" />
                   <input
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all"
                   />
                 </div>
               </div>
 
-             
               <div className="space-y-1.5">
                 <label className="text-white/80 text-xs sm:text-sm font-medium block text-left">
                   Confirm Password
@@ -168,20 +198,26 @@ const Register = () => {
                   <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 w-4 h-4 sm:w-5 sm:h-5 group-focus-within:text-amber-300 transition-colors" />
                   <input
                     type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
                     className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all"
                   />
                 </div>
               </div>
 
-             
               <div className="space-y-1.5">
                 <label className="text-white/80 text-xs sm:text-sm font-medium block text-left">
-                  Secret Key <span className="text-amber-400/50 text-[10px]">(Optional - Admin only)</span>
+                  Secret Key{" "}
+                  <span className="text-amber-400/50 text-[10px]">
+                    (Optional - Admin only)
+                  </span>
                 </label>
                 <div className="relative group">
                   <FiKey className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 w-4 h-4 sm:w-5 sm:h-5 group-focus-within:text-amber-300 transition-colors" />
                   <input
+                    value={secretKey}
+                    onChange={(e) => setSecretKey(e.target.value)}
                     type="password"
                     placeholder="Enter admin secret key"
                     className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all"
@@ -191,7 +227,6 @@ const Register = () => {
                   * Leave empty to create a regular user account
                 </p>
               </div>
-
 
               <button
                 type="submit"
@@ -219,5 +254,5 @@ const Register = () => {
     </div>
   );
 };
-
+  
 export default Register;

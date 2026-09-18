@@ -28,7 +28,7 @@ const authStore = (set) => ({
 
 const useAuthStore = create(
   devtools(
-    persist({
+    persist(authStore, {
       name: "auth",
     }),
   ),
