@@ -36,8 +36,6 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
     private final PaymentService paymentService;
 
-    private final PaymentService paymentService;
-
     @Override
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
@@ -238,7 +236,4 @@ public class BookingServiceImpl implements BookingService {
         return "Booking with id " + id + " cancelled successfully.";
     }
 
-    public UserRepo getUserRepo() {
-        return userRepo;
-    }
 }
