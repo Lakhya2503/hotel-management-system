@@ -34,6 +34,7 @@ public class BookingServiceImpl implements BookingService {
     private final RoomRepository roomRepository;
     private final UserRepo userRepo;
     private final BookingMapper bookingMapper;
+    private final PaymentService paymentService;
 
     private final PaymentService paymentService;
 
@@ -235,5 +236,9 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
 
         return "Booking with id " + id + " cancelled successfully.";
+    }
+
+    public UserRepo getUserRepo() {
+        return userRepo;
     }
 }
