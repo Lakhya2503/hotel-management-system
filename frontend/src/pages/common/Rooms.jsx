@@ -11,6 +11,7 @@ import { TbSofa } from 'react-icons/tb'
 import RoomsData from '../../config/Room.json'
 import { RiFridgeLine } from "react-icons/ri";
 import { FaChampagneGlasses } from "react-icons/fa6";
+import { Link, useNavigate } from 'react-router-dom';
 
 
 // ---- Fake API service ----
@@ -47,6 +48,7 @@ const amenityIcons = {
   'Garden View': <MdGrass />,
   'Living Area': <MdWeekend />,
 }
+
 
 // ---------------- Room Card ----------------
 const RoomCard = ({ room, isFavorite, onToggleFavorite }) => (
@@ -126,16 +128,17 @@ const RoomCard = ({ room, isFavorite, onToggleFavorite }) => (
           <span className="text-2xl font-bold text-gray-800">${room.price}</span>
           <span className="text-sm text-gray-500"> / night</span>
         </div>
-        <button
-          disabled={!room.isAvailable}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
-            room.isAvailable
-              ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-          }`}
-        >
-          {room.isAvailable ? 'Book Now' : 'Unavailable'}
-        </button>
+         <button
+      disabled={!room.isAvailable}
+      onClick={() => navigate(`/${room.id}`)}
+      className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
+        room.isAvailable
+          ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+      }`}
+    >
+      {room.isAvailable ? 'Book Now' : 'Unavailable'}
+    </button>
       </div>
     </div>
   </div>
@@ -280,6 +283,8 @@ const Rooms = () => {
   const [error, setError] = useState(null)
   const [favorites, setFavorites] = useState([])
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const navigate = useNavigate()
+
 
   const [filters, setFilters] = useState({
     amenities: [],
