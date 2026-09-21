@@ -13,7 +13,7 @@ import java.util.Map;
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    @Value("${brevo.api.key}")
+    @Value("${BREVO_API_KEY}")
     private String apiKey;
 
     @Value("${brevo.sender.email}")
@@ -148,6 +148,49 @@ public class EmailServiceImpl implements EmailService {
                 .body(requestBody)
                 .retrieve()
                 .toBodilessEntity();
+    }
+
+
+    @Override
+    public void sendCampaignEmail(String recipientEmail, String recipientName, String subject, String content) {
+
+        String htmlContent = """
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <h2>Hotel Aatithya</h2>
+                <p>%s</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin-top: 20px;">
+                <p style="font-size: 12px; color: #888;">You are receiving this email as a valued guest of Hotel Aatithya.</p>
+            </body>
+            </html>
+            """.formatted(content.replace("\n", "<br>"));
+
+        Map<String, Object> requestBody = Map.of(
+                "sender", Map.of(
+                        "name", senderName,
+                        "email", senderEmail
+                ),
+                "to", List.of(
+                        Map.of(
+                                "name", recipientName,
+                                "email", recipientEmail
+                        )
+                ),
+                "subject", subject,
+                "htmlContent", htmlContent
+        );
+
+        try {
+            restClient.post()
+                    .uri("https://api.brevo.com/v3/smtp/email")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("api-key", apiKey)
+                    .body(requestBody)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            throw new RuntimeException("Brevo email dispatch failed for " + recipientEmail + ": " + e.getMessage(), e);
+        }
     }
 
 }

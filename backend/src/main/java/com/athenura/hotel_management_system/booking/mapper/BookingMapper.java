@@ -1,8 +1,8 @@
 package com.athenura.hotel_management_system.booking.mapper;
-
-import com.athenura.hotel_management_system.booking.dto.BookingRequest;
+import com.athenura.hotel_management_system.payment.dto.PaymentDTO;
 import com.athenura.hotel_management_system.booking.dto.BookingResponse;
 import com.athenura.hotel_management_system.booking.entity.Booking;
+import com.athenura.hotel_management_system.payment.dto.PaymentDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,8 +35,8 @@ public class BookingMapper {
                 .receptionistName(
                         booking.getReceptionist() != null
                                 ? booking.getReceptionist().getFirstName()
-                                + " "
-                                + booking.getReceptionist().getLastName()
+                                  + " "
+                                  + booking.getReceptionist().getLastName()
                                 : null
                 )
 
