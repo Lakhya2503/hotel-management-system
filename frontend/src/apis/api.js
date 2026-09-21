@@ -5,12 +5,12 @@ import { apiClient } from "./apiClient";
 /* =================================================== */
 
 export const register = async(payload) => {
-  return await apiClient.post('/auth/signup', {json : payload})
+  return await apiClient.post('/auth/signup', {json : payload}).json()
 }
 
 export const login = async(payload) => {
-  return await apiClient.post('/auth/login', {json : payload})
-}
+  return await apiClient.post('/auth/login', {json : payload}).json()
+} 
 
 /* =================================================== */
 /* RECEPTIONIST */

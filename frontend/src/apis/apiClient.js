@@ -9,6 +9,7 @@ export const apiClient = ky.create({
   fetch: async (request, init) => {
     const start = performance.now();
     const response = await fetch(request, init);
+    console.log("response", response)
     const duration = performance.now() - start;
 
     console.log(

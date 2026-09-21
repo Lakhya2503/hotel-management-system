@@ -7,9 +7,11 @@ const authStore = (set) => ({
   register: async (data) => {
     try {
       const res = await register(data);
+      console.log("login", res) 
       set({
         user: res,
       });
+      return res
     } catch (error) {
       return error;
     }
@@ -17,9 +19,11 @@ const authStore = (set) => ({
   login: async (data) => {
     try {
       const res = await login(data);
+      console.log("res", res)
       set({
         user: res,
       });
+      return res
     } catch (error) {
       return error;
     }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FiUser,
   FiMail,
@@ -15,6 +15,7 @@ import {
   Bedroom_image_login_Register,
 } from "../../assets";
 import useAuthStore from "../../app/useAuthStore";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const register = useAuthStore((state) => state.register);
@@ -30,6 +31,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSecretKey, setShowSecretKey] = useState(false);
+  const navigate = useNavigate()
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -40,6 +42,14 @@ const Register = () => {
     }
     const res = await register(payload);
     console.log("res : ", res)
+
+
+    if(res.success && res.success === true) {
+      toast.success(res.message)
+
+      navigate(`/login`)
+    }
+
     setLoading(false);
   };
 
