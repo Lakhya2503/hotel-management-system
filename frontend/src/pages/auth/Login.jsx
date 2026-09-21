@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiLogIn, FiMail, FiLock, FiHome } from "react-icons/fi";
+import { FiLogIn, FiMail, FiLock, FiHome, FiEye, FiEyeOff } from "react-icons/fi";
 import {
   Athenura_Circle_Logo,
   Bedroom_image_login_Register,
@@ -12,17 +12,15 @@ const Login = () => {
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 
-  console.log("login", login);
-
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear the field error as soon as the user starts typing again
     setErrors((prev) => ({ ...prev, [name]: "" }));
     setServerError("");
   };
@@ -55,13 +53,17 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const res = await login({
+      const payload = {
         email: formData.email.trim(),
         password: formData.password,
-      });
-      console.log("res", res);
-      toast.success(` ${formData.email} - logged in successfully`);
-      navigate("/admin/dashboard/");
+      };
+
+      const res = await login(payload);
+      console.log("res", res)
+      if(res.success && res.success === true) {
+        toast.success(` ${res.message}`);
+      }
+      navigate("/admin/dashboard");
     } catch (err) {
       setServerError(
         err?.response?.data?.message ||
@@ -201,7 +203,7 @@ const Login = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="guest@luxestay.com"
-                    className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white/5 backdrop-blur-sm border rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:ring-2 transition-all ${
+                    className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-transparent backdrop-blur-sm border rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:ring-2 transition-all ${
                       errors.email
                         ? "border-red-400/70 focus:border-red-400 focus:ring-red-400/30"
                         : "border-white/10 focus:border-amber-400 focus:ring-amber-400/30"
@@ -235,17 +237,29 @@ const Login = () => {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-white/5 backdrop-blur-sm border rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:ring-2 transition-all ${
+                    className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-11 py-2.5 sm:py-3 bg-transparent backdrop-blur-sm border rounded-xl text-white placeholder-white/30 text-sm sm:text-base focus:outline-none focus:ring-2 transition-all ${
                       errors.password
                         ? "border-red-400/70 focus:border-red-400 focus:ring-red-400/30"
                         : "border-white/10 focus:border-amber-400 focus:ring-amber-400/30"
                     }`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400 hover:text-amber-300 focus:outline-none focus:text-amber-300 transition-colors"
+                  >
+                    {showPassword ? (
+                      <FiEyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                    ) : (
+                      <FiEye className="w-4 h-4 sm:w-5 sm:h-5" />
+                    )}
+                  </button>
                 </div>
                 {errors.password && (
                   <p className="text-red-300 text-xs text-left">
