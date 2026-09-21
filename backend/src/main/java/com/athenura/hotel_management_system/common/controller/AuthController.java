@@ -1,5 +1,6 @@
 package com.athenura.hotel_management_system.common.controller;
 
+import com.athenura.hotel_management_system.common.dto.ApiResponse;
 import com.athenura.hotel_management_system.common.dto.LoginRequestDto;
 import com.athenura.hotel_management_system.common.dto.RefreshTokenRequest;
 import com.athenura.hotel_management_system.common.dto.TokenResponse;
@@ -23,20 +24,31 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDto> signUpUser(
+    public ResponseEntity<ApiResponse<UserResponseDto>> signUpUser(
             @Valid @RequestBody UserRequestDto request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signUpUser(request));
+        UserResponseDto response = authService.signUpUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true, "Registration successful!", response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(
+    public ResponseEntity<ApiResponse<TokenResponse>> login(
             @Valid @RequestBody LoginRequestDto request) {
-        return ResponseEntity.ok(authService.login(request));
+        TokenResponse tokenResponse = authService.login(request);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Login successful!", tokenResponse));
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<TokenResponse> refreshToken(
+    public ResponseEntity<ApiResponse<TokenResponse>> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request) {
-        return ResponseEntity.ok(authService.refreshToken(request));
+        TokenResponse tokenResponse = authService.refreshToken(request);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Token refreshed successfully!", tokenResponse));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @Valid @RequestBody RefreshTokenRequest request) {
+        authService.logout(request.getRefreshToken());
+        return ResponseEntity.ok(new ApiResponse<>(true, "Logout successful!"));
     }
 }

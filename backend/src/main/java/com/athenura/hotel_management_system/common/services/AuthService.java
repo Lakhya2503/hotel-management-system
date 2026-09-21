@@ -105,7 +105,7 @@ public class AuthService {
         );
 
         Users user = userRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + request.getEmail()));
 
         String accessToken = jwtService.generateToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
@@ -120,6 +120,10 @@ public class AuthService {
         String accessToken = jwtService.generateToken(newRefreshToken.getUser());
 
         return new TokenResponse(accessToken, newRefreshToken.getToken());
+    }
+
+    public void logout(String refreshToken) {
+        refreshTokenService.deleteByToken(refreshToken);
     }
 
     private UserResponseDto mapToUserResponseDto(Users user) {
