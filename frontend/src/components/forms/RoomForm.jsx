@@ -8,6 +8,8 @@ import {
   FaTimesCircle,
   FaPlus,
   FaDoorOpen,
+  FaImage,
+  FaTrash,
 } from "react-icons/fa";
 import useRoomStore from "../../app/useRoomStore";
 
@@ -20,6 +22,9 @@ const RoomForm = () => {
     roomStatus: "AVAILABLE",
   });
 
+  // Array of image URLs / base64 strings
+  const [images, setImages] = useState([]);
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -28,6 +33,76 @@ const RoomForm = () => {
   const roomTypes = ["STANDARD", "DELUXE", "SUITE", "PRESIDENTIAL"];
   const roomStatuses = ["AVAILABLE", "OCCUPIED", "MAINTENANCE", "RESERVED"];
 
+  // ---------- IMAGE HANDLING ----------
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    // Validate: max 5 images
+    if (images.length + files.length > 5) {
+      setErrors((prev) => ({
+        ...prev,
+        images: "You can upload a maximum of 5 images",
+      }));
+      return;
+    }
+
+    // Validate each file (type & size)
+    const validFiles = [];
+    const newErrors = { ...errors };
+
+    files.forEach((file) => {
+      if (!file.type.startsWith("image/")) {
+        newErrors.images = "Only image files are allowed";
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        newErrors.images = "Each image must be less than 5MB";
+        return;
+      }
+      validFiles.push(file);
+    });
+
+    if (validFiles.length === 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Convert files to base64 (or use URL.createObjectURL for preview only)
+    const readers = validFiles.map(
+      (file) =>
+        new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () =>
+            resolve({ file, preview: reader.result });
+          reader.readAsDataURL(file);
+        })
+    );
+
+    Promise.all(readers).then((results) => {
+      setImages((prev) => [...prev, ...results]);
+      setErrors((prev) => ({ ...prev, images: "" }));
+    });
+
+    // Reset input so the same file can be re-selected if removed
+    e.target.value = "";
+  };
+
+  const handleRemoveImage = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const moveImage = (index, direction) => {
+    setImages((prev) => {
+      const updated = [...prev];
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= updated.length) return prev;
+      [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+      return updated;
+    });
+  };
+
+  // ---------- VALIDATION ----------
   const validateForm = () => {
     const newErrors = {};
 
@@ -51,17 +126,22 @@ const RoomForm = () => {
       newErrors.roomStatus = "Room status is required";
     }
 
+    // Optional: require at least one image
+    // if (images.length === 0) {
+    //   newErrors.images = "At least one image is required";
+    // }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // ---------- CHANGE HANDLER ----------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -70,7 +150,8 @@ const RoomForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  // ---------- SUBMIT ----------
+  const handleSubmit = async(e) => {
     e.preventDefault();
     setSuccessMessage("");
 
@@ -80,22 +161,23 @@ const RoomForm = () => {
 
     setIsSubmitting(true);
 
-    // Prepare room data
+    // Prepare room data with images array
     const roomData = {
       roomNumber: formData.roomNumber.trim(),
       roomType: formData.roomType,
       pricePerNight: parseFloat(formData.pricePerNight),
       capacity: parseInt(formData.capacity),
       roomStatus: formData.roomStatus,
+      images: images.map((img) => img.preview)
     };
 
     try {
-      // Add room using zustand store
-      addRoom(roomData);
+      const res = await addRoom(roomData);
 
+      console.log("res Addroom", res)
       setSuccessMessage(`Room ${formData.roomNumber} added successfully!`);
 
-      // Reset form
+      // Reset form + images
       setFormData({
         roomNumber: "",
         roomType: "DELUXE",
@@ -103,8 +185,8 @@ const RoomForm = () => {
         capacity: "",
         roomStatus: "AVAILABLE",
       });
+      setImages([]);
 
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage("");
       }, 3000);
@@ -123,6 +205,7 @@ const RoomForm = () => {
       capacity: "",
       roomStatus: "AVAILABLE",
     });
+    setImages([]);
     setErrors({});
     setSuccessMessage("");
   };
@@ -203,7 +286,7 @@ const RoomForm = () => {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-              $
+              ₹
             </span>
             <input
               type="number"
@@ -269,6 +352,97 @@ const RoomForm = () => {
           </select>
           {errors.roomStatus && (
             <p className="mt-1 text-sm text-red-600">{errors.roomStatus}</p>
+          )}
+        </div>
+
+        {/* ---------- IMAGES (ARRAY) ---------- */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            <FaImage className="inline mr-2 text-pink-500" />
+            Room Images
+            <span className="ml-2 text-xs text-gray-400">
+              (Max 5, up to 5MB each)
+            </span>
+          </label>
+
+          {/* Upload Button */}
+          <label
+            className={`flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition ${
+              errors.images
+                ? "border-red-400 bg-red-50"
+                : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+            }`}
+          >
+            <FaPlus className="text-blue-500" />
+            <span className="text-sm text-gray-600">
+              Click to upload images
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
+
+          {errors.images && (
+            <p className="mt-1 text-sm text-red-600">{errors.images}</p>
+          )}
+
+          {/* Image Previews */}
+          {images.length > 0 && (
+            <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {images.map((img, index) => (
+                <div
+                  key={index}
+                  className="relative group rounded-lg overflow-hidden border border-gray-200"
+                >
+                  <img
+                    src={img.preview}
+                    alt={`Room preview ${index + 1}`}
+                    className="w-full h-28 object-cover"
+                  />
+
+                  {/* Primary badge */}
+                  {index === 0 && (
+                    <span className="absolute top-1 left-1 bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded">
+                      Primary
+                    </span>
+                  )}
+
+                  {/* Overlay actions */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => moveImage(index, -1)}
+                        className="px-2 py-1 text-xs bg-white text-gray-700 rounded hover:bg-gray-100"
+                      >
+                        ←
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+                      title="Remove image"
+                    >
+                      <FaTrash size={12} />
+                    </button>
+                    {index < images.length - 1 && (
+                      <button
+                        type="button"
+                        onClick={() => moveImage(index, 1)}
+                        className="px-2 py-1 text-xs bg-white text-gray-700 rounded hover:bg-gray-100"
+                      >
+                        →
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
