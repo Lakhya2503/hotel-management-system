@@ -35,7 +35,10 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     let role = "ADMIN";
-    const res = await register(firstName, lastName, email, password, secretKey, role);
+    let payload = {
+      firstName, lastName, email, password, secretKey, role
+    }
+    const res = await register(payload);
     console.log("res : ", res)
     setLoading(false);
   };
