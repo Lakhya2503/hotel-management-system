@@ -49,8 +49,10 @@ const roomStore = (set) => ({
       set({
         room: _room,
       });
+      console.log("add room", res)
       return res;
     } catch (error) {
+      console.log("error", error)
       return error;
     }
   },

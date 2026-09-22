@@ -103,7 +103,9 @@ export const cancelBooking = async (id, payload) => {
 /* =================================================== */
 /* create rooms */
 export const createRoom = async (payload) => {
-  return await apiClient.post(`/admin/room/create`, {json : payload}).json();
+  const res = await apiClient.post(`/admin/room/create`, {json : payload}).json();
+  console.log("res", res)
+  return res
 };
 
 /* update room */
