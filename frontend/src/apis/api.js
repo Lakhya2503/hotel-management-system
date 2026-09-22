@@ -10,7 +10,7 @@ export const register = async(payload) => {
 
 export const login = async(payload) => {
   return await apiClient.post('/auth/login', {json : payload}).json()
-} 
+}
 
 /* =================================================== */
 /* RECEPTIONIST */
